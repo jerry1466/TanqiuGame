@@ -38,4 +38,32 @@ export default class MathUtil {
         else
             return false
     }
+
+	static LeftBoundaryHitTest(nodeLeft, screenLeft) {
+		if (nodeLeft <= screenLeft)
+			return true
+		else
+			return false
+	}
+
+	static RightBoundaryHitTest(nodeRight, screenRight) {
+		if (nodeRight >= screenRight)
+			return true
+		else
+			return false
+	}
+
+	static TopBoundaryHitTest(nodeTop, screenTop) {
+		if (nodeTop >= screenTop)
+			return true
+		else
+			return false
+	}
+
+	static ButtomBoundaryHitTest(nodeButtom, screenButtom) {
+		if (nodeButtom <= screenButtom)
+			return true
+		else
+			return false
+	}
 }
