@@ -1,5 +1,6 @@
 import Databus from 'Databus'
 import BasePool from 'BasePool'
+import MathUtil from "MathUtil"
 import UnitManager from 'UnitManager'
 
 cc.Class({
@@ -16,7 +17,7 @@ cc.Class({
 		this.is_valid = true
 	}
 
-	upload() {
+	update() {
 		if (!this.is_valid) {
 			return
 		}
@@ -27,7 +28,7 @@ cc.Class({
 		var ballPool = UnitManager.GetAllBall()
 		for (var i = 0; i < ballPool.length; i++) {
 			var ball = ballPool[i]
-			if (this.right >= ball.left && this.left <= ball.right && this.up >= ball.buttom) {
+			if (MathUtil.HitTest(this.node, ball.node)) {
 				ball.ReduceScore(this.power)
 				this.is_valid = false
 				UnitManager.RecycleBullet(this)

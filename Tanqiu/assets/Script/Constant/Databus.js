@@ -21,8 +21,7 @@ export default class Databus {
         this.screenHeight = 812
         this.screenRatio = 1
         this.adHeight = 110
-        this.gameRegion = cc.v2(370, 550)
-        this.startMission = 1
+        this.gameRegion = cc.v2(375, 550)
         this.mission = 1
         this.hitSpeed = 2
         this.xLeftWood = -80
