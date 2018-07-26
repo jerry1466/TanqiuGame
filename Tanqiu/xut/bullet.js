@@ -7,10 +7,10 @@ cc.Class({
 	extends: cc.Component,
 	
 	Init(x, y, p) {
-		this.speed = 10
 		this.power = p
 		this.node.x = x
 		this.node.y = y
+		this.speed = this.node.height / 2
 		this.top = this.node.y + this.node.height / 2
 		this.left = this.node.x - this.node.width / 2
 		this.right = this.node.x + this.node.width / 2
@@ -22,7 +22,7 @@ cc.Class({
 			return
 		}
 
-		this.node.y++
+		this.node.y += this.speed
 
 		//检测子弹是否碰撞到球体
 		var ballPool = UnitManager.GetAllBall()

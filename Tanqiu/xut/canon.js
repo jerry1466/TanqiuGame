@@ -2,6 +2,8 @@ import Databus from 'Databus'
 import MathUtil from "MathUtil"
 import GameInfo from "GameInfo"
 import EventUtil from "EventUtil"
+import UnitManager from "UnitManager"
+import CD from "CD"
 
 let databus = new Databus()
 let that
@@ -12,8 +14,12 @@ cc.Class({
     },
 
     update() {
+		UnitManager.GetInstance().CreateBullet(this.node.x, this.node.y, this.bullet_power)
+		if (this.ballCD.Tick())
+			UnitManager.GetInstance().CreateBall()
+	
         //校验大炮是否可以移动到指定的位置，并移动大炮
-        this.before_x = this.node_x
+        this.before_x = this.node.x
         if (this.touch_x < this.node.x) {
             if(!MathUtil.LeftBoundaryHitTest(this.touch_x - this.node.width / 2, databus.screenLeft)
                 this.node.x = databus.screenLeft + this.node.width / 2
@@ -37,8 +43,11 @@ cc.Class({
         this.touch_x = 0
         this.score = 0
         this.before_x = 0
+        this.bulletPower = 1
+        this.ballCD = new CD()
         this.top = this.node.y + this.node.height / 2
-        that = this
+
+        var that = this
         EventUtil.GetInstance().AddEventListener("CANVAS_TOUCH_START", function(x:number){
 			//here x refers to e.touch._point.x
 			that.SetPositionX(x);
