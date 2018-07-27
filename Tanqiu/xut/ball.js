@@ -5,7 +5,7 @@ let burnLeft = 0
 let burnRight = 1
 cc.Class({
 	extends: cc.Component,
-	
+	// Ball的坐标原点要设置在Ball的圆心
 	Init(score) {
 		//随机决定ball的出现位置，在屏幕左边还是屏幕右边
 		this.burnSide = burnRight
@@ -96,12 +96,40 @@ cc.Class({
 		}
 	}
 
+	hitCannon() {
+		var cannon = UnitManager.GetInstance().cannon
+		var left = this.node.x - this.node.radii
+		var right = this.node.x + this.node.radii
+		var buttom = this.node.y - this.node.radii
+		var is_hit = false
+
+		if (left <= cannon.node.x + cannon.node.width / 2 &&
+			right > cannon.node.x + cannon.node.width / 2 &&
+			buttom <= cannon.node.y + cannon.node.height) {
+			//碰右边
+			is_hit = true
+		} else if (right >= cannon.node.x - cannon.node.width / 2 &&
+			left < cannon.node.x - cannon.node.width / 2 &&
+			buttom <= cannon.node.y + cannon.node.height) {
+			//碰左边
+			is_hit = true
+		} else if ((right <= cannon.node.x + cannon.node.width / 2 &&
+			left >= cannon.node.x - cannon.node.width / 2) ||
+			(left < cannon.node.x - cannon.node.width / 2 &&
+			right > cannon.node.x + cannon.node.width / 2) &&
+			buttom <= cannon.node.y + cannon.node.height) {
+			//碰中间
+			is_hit = true
+		}
+	}
+
 	update() {
 		if (!this.is_valid) {
 			return
 		}
 
 		this.move()
+		this.hitCannon()
 	}
 })
 

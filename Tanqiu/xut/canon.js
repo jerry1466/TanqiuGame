@@ -9,7 +9,7 @@ let databus = new Databus()
 let that
 cc.Class({
     extends: cc.Component,
-    
+
     onLoad() {
     },
 
@@ -38,13 +38,14 @@ cc.Class({
         //遍历整个分数ball的pool，筛选出所有坐标落在这个范围内的分数ball，进行加分
         GameInfo.GetInstance().SetScore(this.before_x, this.node.x, this.top)
     },
-    
+
+	//Cannon的坐标原点要设置在cannon的底部中间
     Init() {
         this.touch_x = 0
         this.score = 0
         this.before_x = 0
         this.bulletPower = 1
-        this.ballCD = new CD()
+        this.ballCD = new CD(3000, true)
         this.top = this.node.y + this.node.height / 2
 
         var that = this

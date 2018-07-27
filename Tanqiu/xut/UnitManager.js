@@ -7,6 +7,7 @@ import PrefabUtil from "PrefabUtil";
 let instance
 export default class UnitManager {
     constructor() {
+		this.cannon
         this.ballList = new Array()
         this.ballPool = new Array()
         this.bulletList = new Array()
@@ -24,6 +25,7 @@ export default class UnitManager {
 		this.loadRes("cannon", function(instance) {
 			var cannon = instance.addComponent("Cannon")
 			cannon.Init()
+			this.cannon = cannon
 		})
 	}
 
