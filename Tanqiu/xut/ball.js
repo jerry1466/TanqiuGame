@@ -3,6 +3,7 @@ import Databus from "Databus"
 
 let burnLeft = 0
 let burnRight = 1
+let needSpliteSize = 5
 cc.Class({
 	extends: cc.Component,
 	// Ball的坐标原点要设置在Ball的圆心
@@ -43,10 +44,35 @@ cc.Class({
 		//ball的旋转要怎么设定？
 
 		//根据当前score来决定ball的分数范围
-		this.value = 0
+		this.value = score
+		this.start_value = this.value
 
 		this.rebounceHeight = 0
 		this.is_valid = true
+	}
+
+	SpliteInit(right, fatherBall) {
+		this.value = fatherBall.start_value / 2
+		this.start_value = this.value
+		this.radii = fatherBall.radii / 2
+		this.node.y = fatherBall.node.y
+		this.speed_y = fatherBall.speed_y
+		this.startFallFlag = true
+		this.rebounceHeight = fatherBall.rebounceHeight
+		this.is_valid = true
+		if (1 == right) {
+			//分裂球往右边移动
+			this.node.x = fatherBall.node.x + fatherBall.radii + this.radii
+			if (this.node.x + this.radii > Databus.screenRight)
+				this.node.x = Databus.screenRight - this.radii
+			this.speed_x = Math.abs(fatherBall.speed_x)
+		} else {
+			//分裂球往左边移动
+			this.node.x = fatherBall.nodex - fatherBall.radii - this.radii
+			if (this.node.x - this.radii < Databus.screenLeft)
+				this.node.x = Databus.screenLeft + this.radii
+			this.speed_x = 0 - Math.abs(fatherBall.speed_x)
+		}
 	}
 
 	move() {
@@ -120,6 +146,27 @@ cc.Class({
 			buttom <= cannon.node.y + cannon.node.height) {
 			//碰中间
 			is_hit = true
+		}
+	}
+
+	splite() {
+		if (this.radii < needSpliteSize) {
+			return
+		}
+
+		var newBall1 = UnitManager.GetInstance().CreateBall()
+		newBall1.SpliteInit(0, this)
+
+		var newBall2 = UnitManager.GetInstance().CreateBall()
+		newBall2.SpliteInit(1, this)
+	}
+
+	ReduceScore(p) {
+		this.value -= p
+		if (this.value <= 0) {
+			this.splite()
+			this.is_valid = false;
+			UnitManager.GetInstance().RemoveBall(this)
 		}
 	}
 
