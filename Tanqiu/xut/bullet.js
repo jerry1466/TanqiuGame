@@ -3,6 +3,7 @@ import BasePool from 'BasePool'
 import MathUtil from "MathUtil"
 import UnitManager from 'UnitManager'
 
+let databus = new Databus()
 cc.Class({
 	extends: cc.Component,
 	
@@ -31,15 +32,15 @@ cc.Class({
 			if (MathUtil.HitTest(this.node, ball.node)) {
 				ball.ReduceScore(this.power)
 				this.is_valid = false
-				UnitManager.RecycleBullet(this)
+				UnitManager.GetInstance().RemoveBullet(this)
 				return
 			}
 		}
 
 		//检测子弹是否飞出屏幕边界
-		if (this.top >= Databus.screenTop) {
+		if (this.top >= databus.screenTop) {
 			this.is_valid = false
-			UnitManager.RecycleBullet(this)
+			UnitManager.GetInstance().RemoveBullet(this)
 			return
 		}
 	}

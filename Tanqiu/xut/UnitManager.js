@@ -10,6 +10,8 @@ export default class UnitManager {
 		this.cannon
         this.ballList = new Array()
         this.ballPool = new Array()
+        this.scoreList = new Array()
+        this.scorePool = new Array()
         this.bulletList = new Array()
         this.bulletPool = new Array()
     }
@@ -29,7 +31,7 @@ export default class UnitManager {
 		})
 	}
 
-    CreateBall() {
+    CreateBall(score) {
     	var ball = null
         if(this.ballPool.length > 0) {
             ball = this.ballPool.shift()
@@ -38,46 +40,81 @@ export default class UnitManager {
                 ball = instance.addComponent("Ball")
             })
         }
-		ball.Init()
+		this.ballList.push(ball)
+		ball.Init(score)
     }
 
-    RemoveBall(ball){
-        this.ballList.slice(this.ballList.indexOf(ball), 1)
+    RemoveBall(ball) {
+        this.ballList.splice(this.ballList.indexOf(ball), 1)
         this.ballPool.push(ball);
     }
 
-    ClearAllBall(){
+    ClearAllBall() {
         for(var i = this.ballList.length - 1; i >= 0; i--)
         {
             this.RemoveBall(this.ballList[i]);
         }
     }
 
-    CreateBullet(x, y, power){
+	GetAllBall() {
+		return this.ballList
+	}
+
+	CreateScoreBall() {
+		var ball = null
+        if(this.scorePool.length > 0) {
+            ball = this.scorePool.shift()
+        } else {
+            this.loadRes("ball", function(instance){
+                ball = instance.addComponent("Ball")
+            })
+        }
+		this.socreList.push(ball)
+	}
+
+	RemoveScoreBall(ball) {
+		ball.is_valid = false
+		this.scoreList.splice(this.scoreList.indexOf(ball), 1)
+        this.scorePool.push(ball);
+	}
+
+	ClearAllScoreBall() {
+        for(var i = this.scoreList.length - 1; i >= 0; i--)
+        {
+            this.RemoveBall(this.scoreList[i]);
+        }
+    }
+
+	GetAllScoreBall() {
+		return this.scoreList
+	}
+
+    CreateBullet(x, y, power) {
     	var bullet = null
         if (this.bulletPool.length > 0) {
             bullet = this.bulletPool.shift()
         } else {
-            this.loadRes("ball", function(instance) {
+            this.loadRes("bullet", function(instance) {
                 bullet = instance.addComponent("Bullet")
             })
         }
+		this.bulletList.push(bullet)
 		bullet.Init(x, y, power)
     }
 
-    RemoveBullet(bullet){
-        this.bulletList.slice(this.bulletList.indexOf(bullet), 1)
+    RemoveBullet(bullet) {
+        this.bulletList.splice(this.bulletList.indexOf(bullet), 1)
         this.bulletPool.push(bullet);
     }
 
-    ClearAllBullet(){
+    ClearAllBullet() {
         for(var i = this.bulletList.length - 1; i >= 0; i--)
         {
             this.RemoveBullet(this.bulletList[i]);
         }
     }
 
-    loadRes(resName, callback){
+    loadRes(resName, callback) {
         PrefabUtil.GetPrefabInstance(resName, function(success, instance){
             if(success)
             {

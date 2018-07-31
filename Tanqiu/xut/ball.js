@@ -4,6 +4,7 @@ import Databus from "Databus"
 let burnLeft = 0
 let burnRight = 1
 let needSpliteSize = 5
+let databus = new Databus()
 cc.Class({
 	extends: cc.Component,
 	// Ball的坐标原点要设置在Ball的圆心
@@ -20,11 +21,11 @@ cc.Class({
 
 		//ball的初始x坐标在屏幕之外，可以让ball有一种从屏幕外飞入屏幕内的效果
 		if (burnLeft == this.burnSide) {
-			this.node.x = Databus.screenLeft - this.radii
+			this.node.x = databus.screenLeft - this.radii
 			//ball的水平移动速度，可随机
 			this.speed_x = 5
 		} else {
-			this.node.x = Databus.screenRight + this.radii
+			this.node.x = databus.screenRight + this.radii
 			//ball的水平移动速度，可随机
 			this.speed_x = -5
 		}
@@ -33,12 +34,12 @@ cc.Class({
 
 		//ball的初始y坐标到屏幕顶部的距离不超过整个屏幕的1/5
 		random = Math.floor(Math.random() * 100) + 1
-		this.node.y = Databus.screenTop - (Databus.screenHeigh / 5) * random / 100
+		this.node.y = databus.screenTop - (databus.screenHeigh / 5) * random / 100
 		this.startHeight = this.node.y
 
 		//ball先水平移动startFall_x距离再开始下落，startFall_x最多不超过屏幕宽度的1/4
 		random = Math.floor(Math.random() * 100) + 1
-		this.startFall_x = (Databus.screeWidth / 4) * random / 100
+		this.startFall_x = (databus.screeWidth / 4) * random / 100
 		this.startFallFlag = false
 
 		//ball的旋转要怎么设定？
@@ -63,14 +64,14 @@ cc.Class({
 		if (1 == right) {
 			//分裂球往右边移动
 			this.node.x = fatherBall.node.x + fatherBall.radii + this.radii
-			if (this.node.x + this.radii > Databus.screenRight)
-				this.node.x = Databus.screenRight - this.radii
+			if (this.node.x + this.radii > databus.screenRight)
+				this.node.x = databus.screenRight - this.radii
 			this.speed_x = Math.abs(fatherBall.speed_x)
 		} else {
 			//分裂球往左边移动
 			this.node.x = fatherBall.nodex - fatherBall.radii - this.radii
-			if (this.node.x - this.radii < Databus.screenLeft)
-				this.node.x = Databus.screenLeft + this.radii
+			if (this.node.x - this.radii < databus.screenLeft)
+				this.node.x = databus.screenLeft + this.radii
 			this.speed_x = 0 - Math.abs(fatherBall.speed_x)
 		}
 	}
@@ -82,9 +83,9 @@ cc.Class({
 			//判断ball是否达到下落条件
 			var dist = null
 			if (burnLeft == this.burnSide) {
-				dist = this.node.x - this.radii - Databus.screenLeft
+				dist = this.node.x - this.radii - databus.screenLeft
 			} else {
-				dist = Databus.screeRgiht - this.node.x - this.radii
+				dist = databus.screeRgiht - this.node.x - this.radii
 			}
 			if (dist >= this.startFall_x)
 				this.startFallFlag = true;
@@ -95,7 +96,7 @@ cc.Class({
 		//判断上下回弹
 		if (this.speed_y < 0) {
 			//ball向下移动
-			if (MathUtil.ButtomBoundaryHitTest(this.node.y - this.radii, Databus.screenButtom)) {
+			if (MathUtil.ButtomBoundaryHitTest(this.node.y - this.radii, databus.screenButtom)) {
 				this.speed_y = 0 - this.speed_y
 				//反弹高度等于上次高度的5/6
 				this.rebounceHeight = this.startHeight - this.startHeight / 6
@@ -111,12 +112,12 @@ cc.Class({
 		//判断左右回弹
 		if (this.speed_x > 0) {
 			//ball向右移动
-			if (MathUtil.RightBoundaryHitTest(this.node.x + this.radii, Databus.screenRight)) {
+			if (MathUtil.RightBoundaryHitTest(this.node.x + this.radii, databus.screenRight)) {
 				this.speed_x = 0 - this.speed_x
 			}
 		} else {
 			//ball向左移动
-			if (MathUtil.LeftBoundaryHitTest(this.node.x - this.radii, Databus.screenLeft)) {
+			if (MathUtil.LeftBoundaryHitTest(this.node.x - this.radii, databus.screenLeft)) {
 				this.speed_x = 0 - this.speed_x
 			}
 		}
@@ -129,35 +130,56 @@ cc.Class({
 		var buttom = this.node.y - this.node.radii
 		var is_hit = false
 
-		if (left <= cannon.node.x + cannon.node.width / 2 &&
-			right > cannon.node.x + cannon.node.width / 2 &&
-			buttom <= cannon.node.y + cannon.node.height) {
-			//碰右边
-			is_hit = true
-		} else if (right >= cannon.node.x - cannon.node.width / 2 &&
-			left < cannon.node.x - cannon.node.width / 2 &&
-			buttom <= cannon.node.y + cannon.node.height) {
-			//碰左边
-			is_hit = true
-		} else if ((right <= cannon.node.x + cannon.node.width / 2 &&
-			left >= cannon.node.x - cannon.node.width / 2) ||
-			(left < cannon.node.x - cannon.node.width / 2 &&
-			right > cannon.node.x + cannon.node.width / 2) &&
-			buttom <= cannon.node.y + cannon.node.height) {
-			//碰中间
-			is_hit = true
+		if (Math.HitTest(this.node, cannon.node)) {
+			databus.gameOver = true
 		}
+	}
+
+	addTenScore(score) {
+		return score + 10
+	}
+
+	addTenPercent(score) {
+		return score + score * 10 / 100
+	}
+
+	addTwentyPercent(score) {
+		return score + score * 20 / 100
+	}
+
+	scoreBallInit(fatherBall, speed_x, addScore) {
+		this.node.x = fatherBall.node.x
+		this.node.y = fatherBall.node.y
+		this.radii = 2
+
+		this.speed_x = speed_x
+		this.speed_y = Math.abs(fatherBall.speed_y)
+
+		this.scoreFunc = addScore
+		this.is_valid = true
+	}
+
+	scoreBallCreate(ball) {
+		var score1 = UnitManager.GetInstance().CreateScoreBall(0)
+		var score2 = UnitManager.GetInstance().CreateScoreBall(0)
+		var score3 = UnitManager.GetInstance().CreateScoreBall(0)
+
+		scoreBallInit(ball, 2, addTenScore)
+		scoreBallInit(ball, 4, addTenPercent)
+		scoreBallInit(ball, 6, addTwentyPercent)
 	}
 
 	splite() {
 		if (this.radii < needSpliteSize) {
+			//如果不能继续分裂，则变成分ball。一个ball变成3个分ball
+			this.scoreBallCreate(this)
 			return
 		}
 
-		var newBall1 = UnitManager.GetInstance().CreateBall()
+		var newBall1 = UnitManager.GetInstance().CreateBall(0)
 		newBall1.SpliteInit(0, this)
 
-		var newBall2 = UnitManager.GetInstance().CreateBall()
+		var newBall2 = UnitManager.GetInstance().CreateBall(0)
 		newBall2.SpliteInit(1, this)
 	}
 
